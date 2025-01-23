@@ -3,7 +3,7 @@
 
 DOCKER_DIR=$(dirname "$0")
 DOCKER_IMAGE_NAME=remote-desktop
-DOCKER_USER=demo
+DOCKER_USER=ubuntu
 
 # Build docker image
 function dbuild { docker build -t ${DOCKER_IMAGE_NAME} \
