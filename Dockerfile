@@ -16,23 +16,13 @@ RUN apt update \
         x11-utils \
         x11-xserver-utils \
         xauth \
-        xdg-utils \
-        xfce4 \
-        xfce4-goodies \
+        xdg-utils \        
         xorgxrdp \
         xrdp \
-        xubuntu-icon-theme \
  && apt clean
 
-## Firefox (no snap)
-RUN apt -y install --no-install-recommends wget \
- && printf "Package: firefox*\nPin: release o=Ubuntu*\nPin-Priority: -1" > /etc/apt/preferences.d/firefox-no-snap \
- && install -d -m 0755 /etc/apt/keyrings \
- && wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null \
- && echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null \
- && echo "Package: *\nPin: origin packages.mozilla.org\nPin-Priority: 1000" | tee /etc/apt/preferences.d/mozilla \
- && apt update \
- && apt -y install firefox \
+## Tor Browser
+RUN apt install torbrowser-launcher
  && apt clean
 
 # Optional utilities
@@ -43,8 +33,8 @@ RUN apt -y install --no-install-recommends -o APT::Immediate-Configure=0 \
  && apt clean
 
 # Create a new user and add to the sudo group:
-ENV USERNAME=demo
-ARG PASSWORD=changeit
+ENV USERNAME=ubuntu
+ARG PASSWORD=vnc
 ARG USER_UID=1001
 ARG USER_GID=1001
 ARG USER_INIT_CONFIG_DIR=/opt/default-config
@@ -53,8 +43,7 @@ RUN useradd -ms /bin/bash --home-dir /home/${USERNAME} ${USERNAME} \
  && echo "${USERNAME}:${PASSWORD}" | chpasswd \
  && usermod -aG sudo,xrdp ${USERNAME} \
  && locale-gen en_US.UTF-8
-COPY xfce-config $USER_INIT_CONFIG_DIR
-
+.
 # Create a start script:
 ENV entry=/usr/bin/entrypoint
 RUN cat <<EOF > /usr/bin/entrypoint
